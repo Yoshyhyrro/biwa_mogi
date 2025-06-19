@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ビワもぎ予約</title>
+    <link rel="stylesheet" href="style.css"> <!-- 必要に応じてスタイルを適用 -->
+</head>
+<body>
+    <h1>ビワもぎ予約フォーム</h1>
+    <p>ご希望の日時と情報をご入力ください。</p>
+    
+    <form action="process_reservation.php" method="POST">
+        <label for="name">お名前:</label>
+        <input type="text" id="name" name="name" required>
+        
+        <label for="email">メールアドレス:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="date">ご希望日:</label>
+        <input type="date" id="date" name="date" required>
+        
+        <label for="time">ご希望時間帯:</label>
+        <select id="time" name="time" required>
+            <option value="">選択してください</option>
+            <option value="10:00-11:00">10:00〜11:00</option>
+            <option value="11:00-12:00">11:00〜12:00</option>
+            <option value="13:00-14:00">13:00〜14:00</option>
+            <option value="14:00-15:00">14:00〜15:00</option>
+        </select>
+        
+        <button type="submit">予約を申し込む</button>
+    </form>
+</body>
+</html>
