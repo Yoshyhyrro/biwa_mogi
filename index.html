@@ -3,33 +3,465 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ビワもぎ予約</title>
-    <link rel="stylesheet" href="style.css"> <!-- 必要に応じてスタイルを適用 -->
+    <title>枇杷もぎ体験予約 - 季節の恵みを楽しもう</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(45deg, #ff9a56, #ffad56);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '🍑';
+            font-size: 3rem;
+            position: absolute;
+            top: 10px;
+            right: 30px;
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ff9a56;
+            box-shadow: 0 0 0 3px rgba(255, 154, 86, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .time-option {
+            position: relative;
+        }
+
+        .time-radio {
+            display: none;
+        }
+
+        .time-label {
+            display: block;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 500;
+        }
+
+        .time-radio:checked + .time-label {
+            background: linear-gradient(45deg, #ff9a56, #ffad56);
+            color: white;
+            border-color: #ff9a56;
+            transform: scale(1.02);
+        }
+
+        .time-label:hover {
+            border-color: #ff9a56;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 154, 86, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .submit-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .price-info {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .price-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff9a56;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            background: #2ecc71;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-container {
+                padding: 30px 20px;
+            }
+            
+            .time-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>ビワもぎ予約フォーム</h1>
-    <p>ご希望の日時と情報をご入力ください。</p>
-    
-    <form action="process_reservation.php" method="POST">
-        <label for="name">お名前:</label>
-        <input type="text" id="name" name="name" required>
+    <div class="container fade-in">
+        <div class="header">
+            <h1>枇杷もぎ体験予約</h1>
+            <p>新鮮な枇杷を自分の手で収穫しませんか？</p>
+        </div>
         
-        <label for="email">メールアドレス:</label>
-        <input type="email" id="email" name="email" required>
+        <div class="form-container">
+            <div class="success-message" id="successMessage">
+                予約が正常に送信されました！確認メールをご確認ください。
+            </div>
+            
+            <div class="price-info">
+                <h3>🍑 体験料金</h3>
+                <div class="price">¥2,000<span style="font-size: 1rem; font-weight: normal;"> / 人</span></div>
+            </div>
+            
+            <form id="reservationForm" action="process_reservation.php" method="POST">
+                <div class="form-group">
+                    <label for="name">お名前 <span style="color: #e74c3c;">*</span></label>
+                    <input type="text" id="name" name="name" required placeholder="山田太郎">
+                    <div class="error-message" id="nameError">お名前を入力してください</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">メールアドレス <span style="color: #e74c3c;">*</span></label>
+                    <input type="email" id="email" name="email" required placeholder="example@email.com">
+                    <div class="error-message" id="emailError">正しいメールアドレスを入力してください</div>
+                </div>
 
-        <label for="date">ご希望日:</label>
-        <input type="date" id="date" name="date" required>
-        
-        <label for="time">ご希望時間帯:</label>
-        <select id="time" name="time" required>
-            <option value="">選択してください</option>
-            <option value="10:00-11:00">10:00〜11:00</option>
-            <option value="11:00-12:00">11:00〜12:00</option>
-            <option value="13:00-14:00">13:00〜14:00</option>
-            <option value="14:00-15:00">14:00〜15:00</option>
-        </select>
-        
-        <button type="submit">予約を申し込む</button>
-    </form>
+                <div class="form-group">
+                    <label for="date">ご希望日 <span style="color: #e74c3c;">*</span></label>
+                    <input type="date" id="date" name="date" required>
+                    <div class="error-message" id="dateError">日付を選択してください</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>ご希望時間帯 <span style="color: #e74c3c;">*</span></label>
+                    <div class="time-grid">
+                        <div class="time-option">
+                            <input type="radio" id="time1" name="time" value="10:00-11:00" class="time-radio" required>
+                            <label for="time1" class="time-label">10:00〜11:00</label>
+                        </div>
+                        <div class="time-option">
+                            <input type="radio" id="time2" name="time" value="11:00-12:00" class="time-radio" required>
+                            <label for="time2" class="time-label">11:00〜12:00</label>
+                        </div>
+                        <div class="time-option">
+                            <input type="radio" id="time3" name="time" value="13:00-14:00" class="time-radio" required>
+                            <label for="time3" class="time-label">13:00〜14:00</label>
+                        </div>
+                        <div class="time-option">
+                            <input type="radio" id="time4" name="time" value="14:00-15:00" class="time-radio" required>
+                            <label for="time4" class="time-label">14:00〜15:00</label>
+                        </div>
+                    </div>
+                    <div class="error-message" id="timeError">時間帯を選択してください</div>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    🍑 予約を申し込む
+                </button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>予約を処理中です...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 今日の日付を設定（過去の日付を選択できないように）
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').setAttribute('min', today);
+
+        // フォームのバリデーション機能
+        function validateForm() {
+            let isValid = true;
+            
+            // エラーメッセージをリセット
+            document.querySelectorAll('.error-message').forEach(msg => {
+                msg.style.display = 'none';
+            });
+            
+            // 名前の検証
+            const name = document.getElementById('name').value.trim();
+            if (!name) {
+                document.getElementById('nameError').style.display = 'block';
+                isValid = false;
+            }
+            
+            // メールの検証
+            const email = document.getElementById('email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                document.getElementById('emailError').style.display = 'block';
+                isValid = false;
+            }
+            
+            // 日付の検証
+            const date = document.getElementById('date').value;
+            if (!date) {
+                document.getElementById('dateError').style.display = 'block';
+                isValid = false;
+            }
+            
+            // 時間の検証
+            const timeSelected = document.querySelector('input[name="time"]:checked');
+            if (!timeSelected) {
+                document.getElementById('timeError').style.display = 'block';
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        // リアルタイムバリデーション
+        document.getElementById('name').addEventListener('blur', function() {
+            if (this.value.trim()) {
+                document.getElementById('nameError').style.display = 'none';
+            }
+        });
+
+        document.getElementById('email').addEventListener('blur', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (this.value.trim() && emailRegex.test(this.value)) {
+                document.getElementById('emailError').style.display = 'none';
+            }
+        });
+
+        document.getElementById('date').addEventListener('change', function() {
+            if (this.value) {
+                document.getElementById('dateError').style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('input[name="time"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('timeError').style.display = 'none';
+                }
+            });
+        });
+
+        // フォーム送信処理
+        document.getElementById('reservationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+            
+            // ローディング表示
+            document.getElementById('reservationForm').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            
+            // 実際の環境では、ここでサーバーにデータを送信
+            // この例では、デモ用に3秒後に成功メッセージを表示
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('reservationForm').style.display = 'block';
+                document.getElementById('reservationForm').reset();
+                
+                // ページトップにスクロール
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 3000);
+        });
+
+        // スムーズなスクロール効果
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(50px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'all 0.8s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+
+        // 入力フィールドのフォーカス効果
+        document.querySelectorAll('input, select').forEach(field => {
+            field.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            field.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
 </body>
 </html>
